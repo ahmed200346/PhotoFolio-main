@@ -1,0 +1,204 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>Home Page</title>
+  <meta name="description" content="">
+  <meta name="keywords" content="">
+
+  <!-- Favicons -->
+  <link href="{% static 'assets/img/favicon.png' %}" rel="icon">
+  <link href="{% static 'assets/img/apple-touch-icon.png'%}" rel="apple-touch-icon">
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com" rel="preconnect">
+  <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Cardo:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="{% static 'assets/vendor/bootstrap/css/bootstrap.min.css'%}" rel="stylesheet">
+  <link href="{% static 'assets/vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/vendor/aos/aos.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/vendor/glightbox/css/glightbox.min.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/vendor/swiper/swiper-bundle.min.css' %}" rel="stylesheet">
+
+  <!-- Main CSS File -->
+  <link href="{% static 'assets/css/main.css'%}" rel="stylesheet">
+
+  <!-- =======================================================
+
+  * Template Name: PhotoFolio
+  * Template URL: https://bootstrapmade.com/photofolio-bootstrap-photography-website-template/
+  * Updated: Aug 07 2024 with Bootstrap v5.3.3
+  * Author: BootstrapMade.com
+  * License: https://bootstrapmade.com/license/
+  ======================================================== -->
+</head>
+
+<body class="index-page">
+
+  <header id="header" class="header d-flex align-items-center sticky-top">
+    <div class="container-fluid position-relative d-flex align-items-center justify-content-between">
+
+        <a href="{% url 'user_details' user.id %}" class="logo d-flex align-items-center me-auto me-xl-0">
+            <i class="bi bi-camera"></i>
+            {% if user.is_authenticated %}
+              <h1 class="sitename">{{ user.username }}</h1>
+            {% else %}
+              <h1 class="sitename">PhotoFolio</h1>
+            {% endif %}
+          </a>      
+
+      <nav id="navmenu" class="navmenu">
+        <ul>
+          <li><a href="{% url 'home' %}">Home<br></a></li>
+          <li><a href="{% url 'about' %}">About</a></li>
+          {% if user.is_authenticated and user.is_artist %}
+            <li><a href="{% url 'list_arts' %}" >Votre Gallery</a></li>
+          {% endif %}
+          <li class="dropdown"><a href="{% url 'gallery' %}"class="active"><span>Gallery</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+            <ul>
+              <li><a href="gallery.html">Nature</a></li>
+              <li><a href="gallery.html">People</a></li>
+              <li><a href="gallery.html">Architecture</a></li>
+              <li><a href="gallery.html">Animals</a></li>
+              <li><a href="gallery.html">Sports</a></li>
+              <li><a href="gallery.html">Travel</a></li>
+              <li class="dropdown"><a href="#"><span>Deep Dropdown</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+                <ul>
+                  <li><a href="#">Deep Dropdown 1</a></li>
+                  <li><a href="#">Deep Dropdown 2</a></li>
+                  <li><a href="#">Deep Dropdown 3</a></li>
+                  <li><a href="#">Deep Dropdown 4</a></li>
+                  <li><a href="#">Deep Dropdown 5</a></li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+          <li><a href="services.html">Services</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+        <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
+      </nav>
+<style>
+  .btn-logout {
+  font-size: 18px;
+  color: #fff; /* Couleur du texte */
+  background-color: #333; /* Couleur de fond */
+  padding: 10px 20px;
+  border-radius: 5px;
+  text-decoration: none;
+  display: inline-block;
+  margin-left: 20px; /* Espacement à gauche du bouton */
+  transition: background-color 0.3s;
+}
+
+.btn-logout:hover {
+  background-color: #ff4d4d; /* Changer la couleur au survol */
+}
+</style>
+      <div class="header-social-links">
+        <a href="#" class="twitter"><i class="bi bi-twitter-x"></i></a>
+        <a href="#" class="facebook"><i class="bi bi-facebook"></i></a>
+        <a href="#" class="instagram"><i class="bi bi-instagram"></i></a>
+        <a href="#" class="linkedin"><i class="bi bi-linkedin"></i></a>
+        {% if user.is_authenticated %}
+        <a href="{% url 'logout' %}" class="btn-logout">Logout</a>
+      {% endif %}
+      </div>
+
+    </div>
+  </header>
+<section id="gallery" class="gallery section">
+    <div class="container-fluid" data-aos="fade-up" data-aos-delay="100">
+
+      <div class="row gy-4 justify-content-center">
+        {% for art in arts %}
+            <div class="col-xl-3 col-lg-4 col-md-6">
+                <div class="gallery-item h-100">
+                    {% if art.is_image %}
+                        <!-- Affichage d'une image -->
+                        <img src="{{ art.file.url }}" class="img-fluid" alt="{{ art.title }}">
+                    {% elif art.is_video %}
+                        <!-- Affichage d'une vidéo -->
+                        <video controls class="img-fluid">
+                            <source src="{{ art.file.url }}" type="video/mp4">
+                            Votre navigateur ne prend pas en charge les vidéos HTML5.
+                        </video>
+                    {% else %}
+                        <p>Type de fichier non pris en charge.</p>
+                    {% endif %}
+    
+                    <div class="gallery-links d-flex align-items-center justify-content-center">
+                        <a href="{{ art.file.url }}" title="{{ art.title }}" class="glightbox preview-link">
+                            <i class="bi bi-arrows-angle-expand"></i>
+                        </a>
+                        <a href="{% url 'details_arts' art.id %}" class="details-link">
+                            <i class="bi bi-link-45deg"></i>
+                        </a>
+                        <h1>{{ art.title }}</h1>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    </div>
+
+</section><!-- /Gallery Section -->
+<footer id="footer" class="footer">
+
+    <div class="container">
+      <div class="copyright text-center ">
+        <p>© <span>Copyright</span> <strong class="px-1 sitename">PhotoFolio</strong> <span>All Rights Reserved</span></p>
+      </div>
+      <div class="social-links d-flex justify-content-center">
+        <a href=""><i class="bi bi-twitter-x"></i></a>
+        <a href=""><i class="bi bi-facebook"></i></a>
+        <a href=""><i class="bi bi-instagram"></i></a>
+        <a href=""><i class="bi bi-linkedin"></i></a>
+      </div>
+      <div class="credits">
+        <!-- All the links in the footer should remain intact. -->
+        <!-- You can delete the links only if you've purchased the pro version. -->
+        <!-- Licensing information: https://bootstrapmade.com/license/ -->
+        <!-- Purchase the pro version with working PHP/AJAX contact form: [buy-url] -->
+        Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
+      </div>
+    </div>
+
+  </footer>
+
+  <!-- Scroll Top -->
+  <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+  <!-- Preloader -->
+  <div id="preloader">
+    <div class="line"></div>
+  </div>
+
+  <!-- Vendor JS Files -->
+  <script src="{% static 'assets/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/php-email-form/validate.js' %}"></script>
+  <script src="{% static 'assets/vendor/aos/aos.js' %}"></script>
+  <script src="{% static 'assets/vendor/glightbox/js/glightbox.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/swiper/swiper-bundle.min.js' %}"></script>
+
+  <!-- Main JS File -->
+  <script src="{% static 'assets/js/main.js' %}"></script>
+  <script>
+    function stayOnHome() {
+      // Empêche l'action par défaut du lien
+      event.preventDefault();
+      console.log("Vous êtes déjà sur la page d'accueil");
+    }
+    setTimeout(()=>{
+        const pree = document.querySelector('#preloader')
+        pree.removeChild();
+    }, 2000)
+  </script>
+</body>
+
+</html>

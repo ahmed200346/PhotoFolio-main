@@ -1,0 +1,170 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - PhotoFolio</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <style>
+        body {
+            background-color: #000;
+            min-height: 100vh;
+        }
+        
+        .signup-section {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 0;
+        }
+
+        .signup-container {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            border-radius: 15px;
+            width: 100%;
+            max-width: 500px;
+            margin: 0 20px;
+        }
+
+        .signup-title {
+            color: #fff;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            color: #fff;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .form-group input,
+        .form-group textarea {  /* Added textarea here */
+            width: 100%;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            color: #fff;
+        }
+
+        /* Specific styles for textarea */
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        /* Remove white background from autofill */
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover,
+        input:-webkit-autofill:focus,
+        input:-webkit-autofill:active,
+        textarea:-webkit-autofill,
+        textarea:-webkit-autofill:hover,
+        textarea:-webkit-autofill:focus,
+        textarea:-webkit-autofill:active {
+            -webkit-box-shadow: 0 0 0 30px black inset !important;
+            -webkit-text-fill-color: white !important;
+            background-color: transparent !important;
+        }
+
+        .signup-btn {
+            width: 100%;
+            padding: 12px;
+            background: #27a776;
+            border: none;
+            border-radius: 5px;
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+            color: #fff;
+        }
+
+        .login-link a {
+            color: #27a776;
+            text-decoration: none;
+        }
+
+        .errorlist {
+            color: #ff6b6b;
+            list-style: none;
+            padding: 0;
+            margin: 5px 0;
+            font-size: 0.9rem;
+        }
+
+        .messages {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 20px;
+        }
+
+        .messages li {
+            color: #fff;
+            background: rgba(39, 167, 118, 0.2);
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        /* Style for placeholder text */
+        ::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <section class="signup-section">
+        <div class="signup-container">
+            <h2 class="signup-title">Sign Up</h2>
+            {% if messages %}
+                <ul class="messages">
+                    {% for message in messages %}
+                        <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+            <form method="POST">
+                {% csrf_token %}
+                {% for field in form %}
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}
+                    <ul class="errorlist">
+                        {% for error in field.errors %}
+                        <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                </div>
+                {% endfor %}
+                <button type="submit" class="signup-btn">Create Account</button>
+            </form>
+            <p class="login-link">Already have an account? <a href="{% url 'login' %}">Sign In</a></p>
+        </div>
+    </section>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

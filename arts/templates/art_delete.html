@@ -1,0 +1,47 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Supprimer l'œuvre d'art</title>
+
+  <!-- Favicons -->
+  <link href="{% static 'assets/img/favicon.png' %}" rel="icon">
+  <link href="{% static 'assets/img/apple-touch-icon.png' %}" rel="apple-touch-icon">
+
+  <!-- Vendor CSS -->
+  <link href="{% static 'assets/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
+
+  <!-- Main CSS -->
+  <link href="{% static 'assets/css/main.css' %}" rel="stylesheet">
+
+  <style>
+    .container {
+      margin-top: 50px;
+    }
+
+    .btn-danger {
+      margin-right: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container text-center">
+    <h2>Voulez-vous vraiment supprimer l'œuvre suivante ?</h2>
+    <p><strong>{{ art.title }}</strong></p>
+
+    <div class="mt-4">
+      <form action="{% url 'delete_art' art.id %}" method="POST">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Supprimer</button>
+      </form>
+      <a href="{% url 'list_arts' %}" class="btn btn-secondary">Annuler</a>
+    </div>
+  </div>
+</body>
+
+</html>

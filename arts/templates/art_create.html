@@ -1,0 +1,204 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>Ajouter Oeuvre d'art</title>
+  <meta name="description" content="">
+  <meta name="keywords" content="">
+
+  <!-- Favicons -->
+  <link href="{% static 'assets/img/favicon.png' %}" rel="icon">
+  <link href="{% static 'assets/img/apple-touch-icon.png' %}" rel="apple-touch-icon">
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com" rel="preconnect">
+  <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="{% static 'assets/vendor/bootstrap/css/bootstrap.min.css'%}" rel="stylesheet">
+  <link href="{% static 'assets/vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/vendor/aos/aos.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/vendor/glightbox/css/glightbox.min.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/vendor/swiper/swiper-bundle.min.css' %}" rel="stylesheet">
+
+  <!-- Main CSS File -->
+  <link href="{% static 'assets/css/main.css'%}" rel="stylesheet">
+
+</head>
+
+<body class="index-page">
+
+  <header id="header" class="header d-flex align-items-center sticky-top">
+    <div class="container-fluid position-relative d-flex align-items-center justify-content-between">
+        <a href="{% url 'list_arts' %}" class="logo d-flex align-items-center me-auto me-xl-0">
+            <i class="bi bi-camera"></i>
+            <h1 class="sitename">Ajouter</h1>
+        </a>         
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="container mt-5">
+      <section id="contact" class="contact section">
+
+        <div class="container aos-init aos-animate" data-aos="fade-up" data-aos-delay="100">
+  
+          <div class="info-wrap aos-init aos-animate" data-aos="fade-up" data-aos-delay="200">
+            <div class="row gy-5">
+
+              <div class="col-lg-4">
+                <div class="info-item d-flex align-items-center">
+              </div><!-- End Info Item -->
+  
+              <div class="col-lg-4">
+                <div class="info-item d-flex align-items-center">
+                </div>
+              </div><!-- End Info Item -->
+  
+              <div class="col-lg-4">
+              </div><!-- End Info Item -->
+  
+            </div>
+          </div>
+  
+          <form method="post" class="php-email-form aos-init aos-animate" data-aos="fade-up" data-aos-delay="300" enctype="multipart/form-data">
+            {% csrf_token %}
+            <!-- Affichage des erreurs de formulaire -->
+            {% if form.errors %}
+              <div class="errors">
+                <ul>
+                  {% for field in form %}
+                    {% for error in field.errors %}
+                      <li>{{ error }}</li>
+                    {% endfor %}
+                  {% endfor %}
+                </ul>
+              </div>
+            {% endif %}
+            
+            <div class="row gy-4">
+                <div class="col-md-6">
+                    <label for="file">Fichier</label>
+                    <input type="file" name="file" class="form-control">
+                    {% if form.file.errors %}
+                      <div class="text-danger">{{ form.file.errors.0 }}</div>
+                    {% endif %}
+                  </div>
+              <div class="col-md-6">
+                <label for="titre">Titre</label>
+                <input type="text" name="title" class="form-control" placeholder="Titre" value="{{ form.title.value|default_if_none:'' }}">
+                {% if form.title.errors %}
+                  <div class="text-danger">{{ form.title.errors.0 }}</div>
+                {% endif %}
+              </div>
+              
+              <div class="col-md-6">
+                <label for="category">Catégorie</label>
+                <input type="text" name="category" class="form-control" placeholder="Catégorie" value="{{ form.category.value|default_if_none:'' }}">
+                {% if form.category.errors %}
+                  <div class="text-danger">{{ form.category.errors.0 }}</div>
+                {% endif %}
+              </div>
+              
+              <div class="col-md-6">
+                <label for="price">Prix</label>
+                <input type="text" name="price" class="form-control" placeholder="Prix" value="{{ form.price.value|default_if_none:'' }}">
+                {% if form.price.errors %}
+                  <div class="text-danger">{{ form.price.errors.0 }}</div>
+                {% endif %}
+              </div>
+              
+              <div class="col-md-6">
+                <label for="tags">Tags</label>
+                <input type="text" name="tags" class="form-control" placeholder="Tags" value="{{ form.tags.value|default_if_none:'' }}">
+                {% if form.tags.errors %}
+                  <div class="text-danger">{{ form.tags.errors.0 }}</div>
+                {% endif %}
+              </div>
+              
+              <div class="col-md-12">
+                <label for="description">Description</label>
+                <input type="text" name="description" class="form-control" placeholder="Description" value="{{ form.description.value|default_if_none:'' }}">
+                {% if form.description.errors %}
+                  <div class="text-danger">{{ form.description.errors.0 }}</div>
+                {% endif %}
+              </div>
+              <div class="col-md-12 text-center">
+                <button type="submit" class="btn btn-primary">Ajouter</button>
+            </div>
+            <div class="col-md-12 text-center">
+              <button type="button" class="btn btn-secondary btn-primary" onclick="window.location.href='{% url 'list_arts' %}'">Annuler</button>
+          </div>
+            
+            </div>
+          </form>          
+        </div>
+  
+      </section>
+      </div>
+
+    </div>
+  </main>
+
+  <footer id="footer" class="footer">
+    <div class="container">
+      <div class="copyright text-center">
+        <p>© <span>Copyright</span> <strong class="px-1 sitename">PhotoFolio</strong> <span>All Rights Reserved</span></p>
+      </div>
+      <div class="social-links d-flex justify-content-center">
+        <a href="#"><i class="bi bi-twitter"></i></a>
+        <a href="#"><i class="bi bi-facebook"></i></a>
+        <a href="#"><i class="bi bi-instagram"></i></a>
+        <a href="#"><i class="bi bi-linkedin"></i></a>
+      </div>
+      <div class="credits">
+        Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scroll Top -->
+  <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+  <!-- Preloader -->
+  <div id="preloader">
+    <div class="line"></div>
+  </div>
+
+  <!-- Vendor JS Files -->
+  <script src="{% static 'assets/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/aos/aos.js' %}"></script>
+  <script src="{% static 'assets/vendor/glightbox/js/glightbox.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/swiper/swiper-bundle.min.js' %}"></script>
+
+  <!-- Main JS File -->
+  <script defer>
+    setTimeout(() => {
+      const pree = document.querySelector('#preloader')
+      pree.style = 'display:none';
+    }, 1500)
+  </script>
+  <script src="{% static 'assets/js/main.js' %}"></script>
+<style>  
+  .form-label {
+    font-weight: 500;
+    color: #333;
+  }
+  
+  .btn-primary {
+    background-color: #4a90e2;
+    border-color: #4a90e2;
+  }
+  
+  .btn-primary:hover {
+    background-color: #357ab9;
+    border-color: #357ab9;
+  }
+  
+</style>
+</body>
+</html>
