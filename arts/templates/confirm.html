@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Supprimer l'œuvre d'art</title>
+  <title>Confirmation - Modification de la visibilité de l'œuvre</title>
 
   <!-- Favicons -->
   <link href="{% static 'assets/img/favicon.png' %}" rel="icon">
@@ -43,14 +43,14 @@
 
 <body class="contact-page">
   <div class="container text-center">
-    <h2>Voulez-vous vraiment supprimer l'œuvre suivante ?</h2>
+    <h2>{{ confirmation_message }}</h2>
     <p><strong>{{ art.title }}</strong></p>
 
     <div class="btn-container mt-4">
-      <!-- Formulaire pour supprimer -->
-      <form action="{% url 'delete_art' art.id %}" method="POST">
+      <!-- Formulaire pour confirmer -->
+      <form action="{% url 'toggle_is_public' art.id %}" method="POST">
         {% csrf_token %}
-        <button type="submit" class="btn btn-danger">Supprimer</button>
+        <button type="submit" class="btn btn-success">Confirmer</button>
       </form>
       
       <!-- Lien pour annuler -->

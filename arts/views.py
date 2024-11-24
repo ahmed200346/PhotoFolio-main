@@ -111,8 +111,20 @@ class ToggleIsPublic(View):
         # Récupérer l'objet art
         art = get_object_or_404(Art, id=art_id)
         
+        # Afficher une page de confirmation
+        context = {
+            'art': art,
+            'confirmation_message': f"Voulez-vous {'publier' if not art.is_public else 'mettre en privé'} cet art ?",
+        }
+        return render(request, 'confirm.html', context)
+
+    def post(self, request, art_id):
+        # Récupérer l'objet art
+        art = get_object_or_404(Art, id=art_id)
+        
         # Basculer l'état de is_public
         art.is_public = not art.is_public
         art.save()
-
+        
+        # Rediriger vers la liste des arts
         return redirect('list_arts')

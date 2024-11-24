@@ -155,9 +155,9 @@
                     </a>
             
                     <!-- Display the eye icon based on the visibility of the art -->
-                    <a href="{% url 'toggle_is_' art.id %}" class="details-link" data-art-id="{{ art.id }}">
-                      <i class="bi {% if art.is_public %}bi-eye{% else %}bi-eye-slash{% endif %}" ></i>
-                  </a>
+                    <a href="{% url 'toggle_is_public' art.id %}" class="details-link">
+                      <i class="bi {% if art.is_public %}bi-eye{% else %}bi-eye-slash{% endif %}"></i>
+                    </a>                  
                   <script>
                     document.addEventListener("DOMContentLoaded", function() {
                       // Clic sur l'icône de l'œil pour basculer la visibilité
@@ -238,15 +238,17 @@
   <div class="pagination-container">
     <ul class="pagination">
         {% if page_obj.has_previous %}
-            <li><a href="?page=1">First</a></li>
+
             <li><a href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
+            <li><a href="?page=1">Next</a></li>
         {% endif %}
         
         <li>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</li>
         
         {% if page_obj.has_next %}
-            <li><a href="?page={{ page_obj.next_page_number }}">Next</a></li>
+            
             <li><a href="?page={{ page_obj.paginator.num_pages }}">Previous</a></li>
+            <li><a href="?page={{ page_obj.next_page_number }}">Next</a></li>
         {% endif %}
     </ul>
 </div>
