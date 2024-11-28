@@ -54,7 +54,7 @@
           </a>         
     </div>
   </header>
-  <div class="container mt-5">
+  <div class="container mt-5  mb-3 " >
     <h1>Détails de l'utilisateur : {{ user_details.username }}</h1>
     <table class="table table-striped" style="border: 1px solid white; background-color: black !important; color: white;">
         <thead>
@@ -95,42 +95,65 @@
             <!-- Ajouter d'autres informations si nécessaire -->
         </tbody>
     </table>
+
     <style>
       .btn-container {
-          display: flex;
-          flex-direction: column;  /* Affichage en colonne */
-          gap: 20px;  /* Espace entre les boutons */
-          align-items: center;  /* Centrer les boutons */
-          margin-top: 30px;  /* Espacement au-dessus */
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin-top: 30px;
       }
-      .btn-container a {
-          width: 200px;  /* Largeur des boutons */
-          padding: 10px;  /* Padding pour les boutons */
-          text-align: center;  /* Alignement du texte dans le bouton */
-          border-radius: 5px;  /* Coins arrondis */
-          text-decoration: none;  /* Enlever les soulignements */
+    
+      .btn-custom {
+        padding: 10px 25px;
+        border-radius: 5px;
+        font-size: 16px;
+        font-weight: bold;
+        text-decoration: none;
+        transition: all 0.3s ease-in-out;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        border: none;
       }
+    
       .btn-danger {
-          background-color: #dc3545;  /* Couleur du bouton supprimer */
-          color: white;  /* Texte en blanc */
-          font-weight: bold;
+        background-color: #dc3545;
+        color: white;
       }
-      .btn-get-started {
-          background-color: #007bff;  /* Couleur du bouton modifier et accueil */
-          color: white;
-          font-weight: bold;
+    
+      .btn-danger:hover {
+        background-color: #c82333;
+        box-shadow: 0 6px 8px rgba(220, 53, 69, 0.3);
       }
-  </style>
+    
+      .btn-primary {
+        background-color: #007bff;
+        color: white;
+      }
+    
+      .btn-primary:hover {
+        background-color: #0056b3;
+        box-shadow: 0 6px 8px rgba(0, 123, 255, 0.3);
+      }
+    
+      .btn-secondary {
+        background-color: #6c757d;
+        color: white;
+      }
+    
+      .btn-secondary:hover {
+        background-color: #5a6268;
+        box-shadow: 0 6px 8px rgba(108, 117, 125, 0.3);
+      }
+    </style>
+    
     <div class="btn-container">
       <!-- Lien pour supprimer l'utilisateur -->
-      <a href="{% url 'delete_user' pk=user.pk %}" class="btn btn-danger">Supprimer mon compte</a>
-
+      <a href="{% url 'delete_user' pk=user.pk %}" class="btn-custom btn-danger">Supprimer mon compte</a>
+    
       <!-- Lien pour modifier les informations -->
-      <a href="{% url 'user_update' user.pk %}" class="btn-get-started">Modifier mes informations</a>
-
-      <!-- Lien pour retourner à l'accueil -->
-      <a href="{% url 'home' %}" class="btn-get-started">Retour à l'accueil</a>
-  </div>
+      <a href="{% url 'user_update' user.pk %}" class="btn-custom btn-primary">Modifier mes informations</a>
+    </div>
+    
 </div>
 
   <footer id="footer" class="footer">

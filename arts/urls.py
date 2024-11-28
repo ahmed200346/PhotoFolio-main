@@ -9,4 +9,5 @@ urlpatterns = [
     path('create/', CreateArtView.as_view(), name='create_art'),
     path('gallery/', GalleryView.as_view(), name='gallery'),
     path('toggle_is_public/<int:art_id>/', ToggleIsPublic.as_view(), name='toggle_is_public'),
+    path('like/<int:art_id>/', LikeArtView.as_view(), name='like_art'),
 ]

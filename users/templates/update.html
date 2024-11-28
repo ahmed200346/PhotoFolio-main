@@ -44,61 +44,69 @@
       <section id="contact" class="contact section">
         <div class="container aos-init aos-animate" data-aos="fade-up" data-aos-delay="100">
   
-          <div class="info-wrap aos-init aos-animate" data-aos="fade-up" data-aos-delay="200">
-            <div class="row gy-5">
-              <div class="col-lg-4">
-                <div class="info-item d-flex align-items-center"></div>
-              </div>
-              <div class="col-lg-4">
-                <div class="info-item d-flex align-items-center"></div>
-              </div>
-              <div class="col-lg-4"></div>
-            </div>
-          </div>
-  
           <form method="post" class="php-email-form aos-init aos-animate" data-aos="fade-up" data-aos-delay="300">
             {% csrf_token %}
-            {% if form.errors %}
-              <div class="errors">
-                <ul>
-                  {% for field in form %}
-                    {% for error in field.errors %}
-                      <li>{{ error }}</li>
-                    {% endfor %}
-                  {% endfor %}
-                </ul>
-              </div>
-            {% endif %}
             <div class="row gy-4">
               <div class="col-md-6">
                 <label for="first_name">Prénom</label>
                 <input type="text" name="first_name" class="form-control" placeholder="Prénom" value="{{ form.first_name.value }}">
+                {% if form.first_name.errors %}
+                  <div class="text-danger">
+                    {% for error in form.first_name.errors %}
+                      <p>{{ error }}</p>
+                    {% endfor %}
+                  </div>
+                {% endif %}
               </div>
               <div class="col-md-6">
                 <label for="last_name">Nom</label>
                 <input type="text" name="last_name" class="form-control" placeholder="Nom" value="{{ form.last_name.value }}">
+                {% if form.last_name.errors %}
+                  <div class="text-danger">
+                    {% for error in form.last_name.errors %}
+                      <p>{{ error }}</p>
+                    {% endfor %}
+                  </div>
+                {% endif %}
               </div>
               
               <div class="col-md-6">
                 <label for="email">Email</label>
                 <input type="email" name="email" class="form-control" placeholder="Email" value="{{ form.email.value }}">
+                {% if form.email.errors %}
+                  <div class="text-danger">
+                    {% for error in form.email.errors %}
+                      <p>{{ error }}</p>
+                    {% endfor %}
+                  </div>
+                {% endif %}
               </div>
               
               <div class="col-md-6">
                 <label for="username">Nom d'utilisateur</label>
                 <input type="text" name="username" class="form-control" placeholder="Nom d'utilisateur" value="{{ form.username.value }}">
+                {% if form.username.errors %}
+                  <div class="text-danger">
+                    {% for error in form.username.errors %}
+                      <p>{{ error }}</p>
+                    {% endfor %}
+                  </div>
+                {% endif %}
               </div>
+
               <div class="col-md-6">
-                <label for="biography">Biographique</label>
-                <input type="text" name="biography" class="form-control" placeholder="Biographique" value="{{ form.biography.value }}">
+                <label for="biography">Biographie</label>
+                <input type="text" name="biography" class="form-control" placeholder="Biographie" value="{{ form.biography.value }}">
               </div>
+
               <div class="col-md-12 text-center">
                 <button type="submit" class="btn btn-primary">Mettre à jour</button>
+              </div>
+              <div class="col-md-12 text-center">
+                {% url 'user_details' user.pk as cancel_url %}
+                <button type="button" class="btn btn-primary" onclick="window.location.href='{{ cancel_url }}'">Annuler</button>                
+              </div>
             </div>
-            <div class="col-md-12 text-center">
-              {% url 'user_details' user.pk as cancel_url %}
-              <button type="button" class="btn btn-primary" onclick="window.location.href='{{ cancel_url }}'">Annuler</button>                
-          </div>
           </form>          
         </div>
       </section>

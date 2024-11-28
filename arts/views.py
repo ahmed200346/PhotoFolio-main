@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DeleteView, DetailView, UpdateView, CreateView
-from .models import Art
+from .models import Art,Like
 from .forms import UpdateArt, AddArt
 from paypal.standard.forms import PayPalPaymentsForm
 from django.conf import settings
@@ -9,6 +9,7 @@ import uuid
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
+from django.contrib.auth.decorators import login_required
 from django.views import View
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 class ArtistView(ListView):
@@ -19,22 +20,46 @@ class ArtistView(ListView):
 
     def get_queryset(self):
         user_id = self.request.user.id
-        return Art.objects.filter(owner=user_id).order_by('-created_at')
-
+        search_query = self.request.GET.get('search', '')
+        queryset = Art.objects.filter(owner=user_id).order_by('-created_at')
+        if search_query:
+            queryset = queryset.filter(title__icontains=search_query)
+        return queryset
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        
         for art in context['arts']:
             art.is_image = art.is_image()
             art.is_video = art.is_video()
+            art.like_count = art.likes.count()
         return context
 class GalleryView(ListView):
-    model=Art
-    template_name='gallery.html'
+    model = Art
+    template_name = 'gallery.html'
     context_object_name = 'arts'
-    def get_queryset(self):
-        return Art.objects.filter(is_public=True)
 
+    def get_queryset(self):
+        category_filter = self.request.GET.get('category', '')
+        favorites_filter = self.request.GET.get('favorites', '')
+        queryset = Art.objects.filter(is_public=True)
+
+        if category_filter:
+            queryset = queryset.filter(category=category_filter)
+
+        if favorites_filter and self.request.user.is_authenticated:
+            liked_art_ids = Like.objects.filter(user=self.request.user).values_list('art_id', flat=True)
+            queryset = queryset.filter(id__in=liked_art_ids)
+
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['categories'] = Art.objects.values_list('category', flat=True).distinct()
+
+        if self.request.user.is_authenticated:
+            user_likes = Like.objects.filter(user=self.request.user).values_list('art_id', flat=True)
+            context['user_likes'] = set(user_likes)
+
+        return context
 class DetailsArtView(DetailView):
     model = Art
     template_name = "art_details.html"  # Template de détails pour afficher une œuvre
@@ -128,3 +153,12 @@ class ToggleIsPublic(View):
         
         # Rediriger vers la liste des arts
         return redirect('list_arts')
+
+class LikeArtView(View):
+    def post(self, request, art_id):
+        art = get_object_or_404(Art, id=art_id)
+        user = request.user
+        like, created = Like.objects.get_or_create(user=user, art=art)
+        if not created:
+            like.delete()
+        return redirect('gallery')
