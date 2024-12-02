@@ -12,30 +12,47 @@ from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.views import View
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+
+from django.db.models import Count
+
 class ArtistView(ListView):
     model = Art
     template_name = 'index.html'
     context_object_name = 'arts'
-    paginate_by = 8  
+    paginate_by = 8
 
     def get_queryset(self):
         user_id = self.request.user.id
         search_query = self.request.GET.get('search', '')
-        queryset = Art.objects.filter(owner=user_id).order_by('-created_at')
+        is_public = self.request.GET.get('is_public', None)
+        sort_likes = self.request.GET.get('sort_likes', False)
+
+        queryset = Art.objects.filter(owner=user_id)
+
         if search_query:
             queryset = queryset.filter(title__icontains=search_query)
+
+        if is_public is not None:
+            if is_public.lower() == 'true': 
+                queryset = queryset.filter(is_public=True)
+            elif is_public.lower() == 'false':  
+                queryset = queryset.filter(is_public=False)
+
+        # Annotate the queryset with like counts
+        queryset = queryset.annotate(like_count=Count('arts_likes'))
+
+        # Sort by like_count if requested
+        if sort_likes and sort_likes.lower() == 'true':
+            queryset = queryset.order_by('-like_count', '-created_at')
+        else:
+            queryset = queryset.order_by('-created_at')
+
         return queryset
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        for art in context['arts']:
-            art.is_image = art.is_image()
-            art.is_video = art.is_video()
-            art.like_count = art.likes.count()
-        return context
 class GalleryView(ListView):
     model = Art
     template_name = 'gallery.html'
     context_object_name = 'arts'
+    paginate_by = 8  # Display 8 items per page
 
     def get_queryset(self):
         category_filter = self.request.GET.get('category', '')
@@ -158,7 +175,17 @@ class LikeArtView(View):
     def post(self, request, art_id):
         art = get_object_or_404(Art, id=art_id)
         user = request.user
+
+        # Vérifie si le like existe
         like, created = Like.objects.get_or_create(user=user, art=art)
+
+
         if not created:
+            # Si le like existe déjà, le supprime
             like.delete()
+        else:
+            # Si le like est nouveau, il est déjà enregistré avec `get_or_create`
+            pass
+
+        # Redirige vers la galerie
         return redirect('gallery')

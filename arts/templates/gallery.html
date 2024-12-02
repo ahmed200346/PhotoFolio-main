@@ -38,7 +38,7 @@
   ======================================================== -->
 </head>
 
-<body class="index-page">
+<body class="index-page" style='min-height:100vh;display:flex;flex-direction:column;justify-content:space-between' style='min-height:100vh;display:flex;flex-direction:column;justify-content:space-between'>
 
   <header id="header" class="header d-flex align-items-center sticky-top">
     <div class="container-fluid position-relative d-flex align-items-center justify-content-between">
@@ -57,7 +57,22 @@
           <li><a href="{% url 'home' %}">Home<br></a></li>
           <li><a href="{% url 'about' %}">About</a></li>
           {% if user.is_authenticated and user.is_artist %}
-            <li><a href="{% url 'list_arts' %}" >Votre Gallery</a></li>
+          <li class="dropdown">
+            <a href="{% url 'list_arts' %}" >
+                <span>Votre Gallery</span>
+                <i class="bi bi-chevron-down toggle-dropdown"></i>
+            </a>
+            <ul>
+                <!-- Lien pour afficher toutes les œuvres -->
+                <li><a href="{% url 'list_arts' %}">Tous les arts</a></li>
+        
+                <!-- Lien pour afficher uniquement les arts publiés -->
+                <li><a href="{% url 'list_arts' %}?is_public=True">Publié</a></li>
+        
+                <!-- Lien pour afficher uniquement les arts privés -->
+                <li><a href="{% url 'list_arts' %}?is_public=False">Privé</a></li>
+            </ul>
+        </li>
           {% endif %}
           <!-- Menu des catégories dans la galerie -->
 <li class="dropdown">
@@ -105,7 +120,7 @@
         <a href="#" class="instagram"><i class="bi bi-instagram"></i></a>
         <a href="#" class="linkedin"><i class="bi bi-linkedin"></i></a>
         {% if user.is_authenticated %}
-        <a href="{% url 'logout' %}" class="btn-logout">Logout</a>
+        <a href="{% url 'logout' %}"  class="btn btn-primary">Logout</a>
       {% endif %}
       </div>
 
@@ -141,10 +156,14 @@
                         <form method="POST" action="{% url 'like_art' art.id %}">
                           {% csrf_token %}
                           <button type="submit" class="btn-like">
-                              <i class="bi bi-heart" style="color: {% if user.is_authenticated and art.id in user_likes %}red{% else %}gray{% endif %};"></i>
-                              {{ art.total_likes }}
+                              <!-- Changer l'icône en fonction de l'état du like -->
+                              <i class="bi bi-heart{% if user.is_authenticated and art.id in user_likes %}-fill{% endif %}" 
+                                 style="color: {% if user.is_authenticated and art.id in user_likes %}red{% else %}gray{% endif %};">
+                              </i>
+                              <h1>{{ art.total_likes }}</h1>
                           </button>
                       </form>
+                        
                         <h1>{{ art.title }}</h1>
                     </div>
                 </div>
@@ -169,20 +188,117 @@
 </section><!-- /Gallery Section -->
 <footer id="footer" class="footer">
   <div class="pagination-container">
-    <div class="pagination">
+    <ul class="pagination">
         {% if page_obj.has_previous %}
-            <a href="?page=1&category={{ request.GET.category }}">First</a>
-            <a href="?page={{ page_obj.previous_page_number }}&category={{ request.GET.category }}">Previous</a>
+            <li class="page-item">
+                <a class="page-link" href="?page=1{% if category_id %}&category_id={{ category_id }}{% endif %}" aria-label="First">
+                    <i class="bi bi-arrow-bar-left"></i> <!-- Icône Première page -->
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if category_id %}&category_id={{ category_id }}{% endif %}" aria-label="Previous">
+                    <i class="bi bi-arrow-left"></i> <!-- Icône Précédente -->
+                </a>
+            </li>
+        {% else %}
+            <li class="page-item disabled">
+                <a class="page-link" href="#" aria-label="First">
+                    <i class="bi bi-arrow-bar-left"></i> <!-- Icône Première page désactivée -->
+                </a>
+            </li>
+            <li class="page-item disabled">
+                <a class="page-link" href="#" aria-label="Previous">
+                    <i class="bi bi-arrow-left"></i> <!-- Icône Précédente désactivée -->
+                </a>
+            </li>
         {% endif %}
 
-        <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+        <li class="page-item disabled">
+            <span class="page-link">Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages }}</span>
+        </li>
 
         {% if page_obj.has_next %}
-            <a href="?page={{ page_obj.next_page_number }}&category={{ request.GET.category }}">Next</a>
-            <a href="?page={{ page_obj.paginator.num_pages }}&category={{ request.GET.category }}">Last</a>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if category_id %}&category_id={{ category_id }}{% endif %}" aria-label="Next">
+                    <i class="bi bi-arrow-right"></i> <!-- Icône Suivante -->
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if category_id %}&category_id={{ category_id }}{% endif %}" aria-label="Last">
+                    <i class="bi bi-arrow-bar-right"></i> <!-- Icône Dernière page -->
+                </a>
+            </li>
+        {% else %}
+            <li class="page-item disabled">
+                <a class="page-link" href="#" aria-label="Next">
+                    <i class="bi bi-arrow-right"></i> <!-- Icône Suivante désactivée -->
+                </a>
+            </li>
+            <li class="page-item disabled">
+                <a class="page-link" href="#" aria-label="Last">
+                    <i class="bi bi-arrow-bar-right"></i> <!-- Icône Dernière page désactivée -->
+                </a>
+            </li>
         {% endif %}
-    </div>
+    </ul>
 </div>
+
+<style>
+.pagination-container {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.pagination {
+  list-style: none;
+  padding: 0;
+  display: inline-flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.page-item {
+  border-radius: 5px;
+}
+
+.page-link {
+  text-decoration: none;
+  display: inline-block;
+  padding: 8px 16px;
+  color: #007bff;
+  background-color: white;
+  border: 1px solid #dee2e6;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+}
+
+.page-link:hover {
+  background-color: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
+.page-item.disabled .page-link {
+  color: #6c757d;
+  pointer-events: none;
+}
+
+.page-item.active .page-link {
+  background-color: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
+.page-link i {
+  font-size: 16px;
+}
+
+.page-link:focus {
+  outline: none;
+  box-shadow: 0 0 0 0.2rem rgba(38, 143, 255, 0.5);
+}
+</style>
+
     <div class="container">
       <div class="copyright text-center ">
         <p>© <span>Copyright</span> <strong class="px-1 sitename">PhotoFolio</strong> <span>All Rights Reserved</span></p>

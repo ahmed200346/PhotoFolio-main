@@ -60,10 +60,13 @@
 /*--------------------------------------------------------------
 # General Styling & Shared Classes
 --------------------------------------------------------------*/
+
+
 body {
   color: var(--default-color);
   background-color: var(--background-color);
   font-family: var(--default-font);
+  min-height: 100vh;
 }
 
 a {
@@ -1389,4 +1392,9 @@ section,
 --------------------------------------------------------------*/
 .starter-section {
   /* Add your styles here */
+}
+
+html, body   {
+  min-height: 100vh !important;
+  max-height: auto !important;
 }

@@ -38,7 +38,7 @@
   ======================================================== -->
 </head>
 
-<body class="index-page">
+<body class="index-page" style='min-height:100vh;display:flex;flex-direction:column;justify-content:space-between'>
 
   <header id="header" class="header d-flex align-items-center sticky-top">
     <div class="container-fluid position-relative d-flex align-items-center justify-content-between">
@@ -57,7 +57,23 @@
           <li><a href="{% url 'home' %}">Home<br></a></li>
           <li><a href="{% url 'about' %}">About</a></li>
           {% if user.is_authenticated and user.is_artist %}
-            <li><a href="{% url 'list_arts' %}" class="active">Votre Gallery</a></li>
+          <li class="dropdown">
+            <a href="{% url 'list_arts' %}" class="active">
+                <span>Votre Gallery</span>
+                <i class="bi bi-chevron-down toggle-dropdown"></i>
+            </a>
+            <ul>
+                <!-- Lien pour afficher toutes les œuvres -->
+                <li><a href="{% url 'list_arts' %}">Tous les arts</a></li>
+        
+                <!-- Lien pour afficher uniquement les arts publiés -->
+                <li><a href="{% url 'list_arts' %}?is_public=True">Publié</a></li>
+        
+                <!-- Lien pour afficher uniquement les arts privés -->
+                <li><a href="{% url 'list_arts' %}?is_public=False">Privé</a></li>
+                <li><a href="{% url 'list_arts' %}?sort_likes=True">Trié par likes</a></li>
+            </ul>
+        </li>
           {% endif %}
           <li class="dropdown">
             <a href="{% url 'gallery' %}" >
@@ -100,7 +116,7 @@
         <a href="#" class="instagram"><i class="bi bi-instagram"></i></a>
         <a href="#" class="linkedin"><i class="bi bi-linkedin"></i></a>
         {% if user.is_authenticated %}
-        <a href="{% url 'logout' %}" class="btn-logout">Logout</a>
+        <a href="{% url 'logout' %}"  class="btn btn-primary">Logout</a>
       {% endif %}
       </div>
 
@@ -109,15 +125,22 @@
   <section id="gallery" class="gallery section">
         
     <div class="container d-flex justify-content-between mb-3">
-        <!-- "Add Art" à gauche -->
-    
-        <a href="{% url 'create_art' %}" class="btn btn-primary">Add Art</a>
-        <!-- "Search" à droite -->
-        <form method="GET" action="{% url 'list_arts' %}" class="search-form mb-4 d-flex align-items-center">
-            <input type="text" name="search" placeholder="Search art by title..." class="form-control me-2" style="max-width: 250px;" value="{{ request.GET.search }}">
-            <button type="submit" class="btn btn-primary">Search</button>
-        </form>
-    </div>
+      <!-- "Add Art" à gauche -->
+      <a href="{% url 'create_art' %}" class="btn btn-primary">Add Art</a>
+
+    <!-- Bouton de soumission du formulaire avec un label "Filtrer" -->
+      <!-- Formulaire de recherche avec filtrage par titre et par statut de visibilité -->
+      <form method="GET" action="{% url 'list_arts' %}" class="search-form mb-4 d-flex align-items-center">
+          <!-- Champ de recherche par titre -->
+          <input type="text" name="search" placeholder="Search art by title..." class="form-control me-2" style="max-width: 250px;" value="{{ request.GET.search }}">
+  
+          <!-- Sélecteur de filtrage par statut public -->
+
+  
+          <!-- Bouton de soumission du formulaire -->
+          <button type="submit" class="btn btn-primary">Search</button>
+      </form>
+  </div>
   
     <div class="row gy-4 justify-content-center">
       {% for art in arts %}
@@ -175,16 +198,98 @@
   <div class="pagination-container">
     <ul class="pagination">
         {% if page_obj.has_previous %}
-            <li><a href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
-            <li><a href="?page=1">Next</a></li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.is_public %}&is_public={{ request.GET.is_public }}{% endif %}{% if request.GET.sort_likes %}&sort_likes={{ request.GET.sort_likes }}{% endif %}" aria-label="Previous">
+                    <i class="bi bi-arrow-left"></i> <!-- Icône flèche gauche -->
+                </a>
+            </li>
+        {% else %}
+            <li class="page-item disabled">
+                <a class="page-link" href="#" aria-label="Previous">
+                    <i class="bi bi-arrow-left"></i> <!-- Icône flèche gauche désactivée -->
+                </a>
+            </li>
         {% endif %}
 
+        {% for num in page_obj.paginator.page_range %}
+            <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+                <a class="page-link" href="?page={{ num }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.is_public %}&is_public={{ request.GET.is_public }}{% endif %}{% if request.GET.sort_likes %}&sort_likes={{ request.GET.sort_likes }}{% endif %}">
+                    {{ num }}
+                </a>
+            </li>
+        {% endfor %}
+
         {% if page_obj.has_next %}
-            <li><a href="?page={{ page_obj.paginator.num_pages }}">Previous</a></li>
-            <li><a href="?page={{ page_obj.next_page_number }}">Next</a></li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.is_public %}&is_public={{ request.GET.is_public }}{% endif %}{% if request.GET.sort_likes %}&sort_likes={{ request.GET.sort_likes }}{% endif %}" aria-label="Next">
+                    <i class="bi bi-arrow-right"></i> <!-- Icône flèche droite -->
+                </a>
+            </li>
+        {% else %}
+            <li class="page-item disabled">
+                <a class="page-link" href="#" aria-label="Next">
+                    <i class="bi bi-arrow-right"></i> <!-- Icône flèche droite désactivée -->
+                </a>
+            </li>
         {% endif %}
     </ul>
 </div>
+
+<style>
+.pagination-container {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.pagination {
+  list-style: none;
+  padding: 0;
+  display: inline-flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.page-item {
+  border-radius: 5px;
+}
+
+.page-link {
+  text-decoration: none;
+  display: inline-block;
+  padding: 8px 16px;
+  color: #007bff;
+  background-color: white;
+  border: 1px solid #dee2e6;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+}
+
+.page-link:hover {
+  background-color: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
+.page-item.disabled .page-link {
+  color: #6c757d;
+  pointer-events: none;
+}
+
+.page-item.active .page-link {
+  background-color: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
+.page-link i {
+  font-size: 16px;
+}
+
+.page-link:focus {
+  outline: none;
+  box-shadow: 0 0 0 0.2rem rgba(38, 143, 255, 0.5);
+}
+</style>
     <div class="container">
       <div class="copyright text-center ">
         <p>© <span>Copyright</span> <strong class="px-1 sitename">PhotoFolio</strong> <span>All Rights Reserved</span></p>

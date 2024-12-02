@@ -13,7 +13,7 @@ class Art(models.Model):
     price = models.FloatField(default=0)
     is_public = models.BooleanField(default=False)  
     likes = models.ManyToManyField(
-        User, related_name='liked_arts', blank=True  # Spécifiez un related_name unique ici
+        User, related_name='likes'
     )
     file = models.FileField(
         upload_to='arts/img/',
@@ -27,7 +27,7 @@ class Art(models.Model):
     )
 
     def is_image(self):
-        image_extensions = ['.jpg', '.jpeg', '.png', '.gif', '.jfif']
+        image_extensions = ['.jpg', '.jpeg', '.png', '.gif', '.jfif', 'webp']
         return any(self.file.name.lower().endswith(ext) for ext in image_extensions)
 
     def is_video(self):
@@ -40,6 +40,7 @@ class Art(models.Model):
 
 class Like(models.Model):
     art = models.ForeignKey(
-        Art, on_delete=models.CASCADE, related_name='art_likes'  # Spécifiez un related_name unique ici
+        Art, on_delete=models.CASCADE, related_name='arts_likes'  # Spécifiez un related_name unique ici
     )
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)

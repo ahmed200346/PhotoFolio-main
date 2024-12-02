@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Art
+from .models import *
 
 @admin.register(Art)
 class ArtAdmin(admin.ModelAdmin):
@@ -16,3 +16,7 @@ class ArtAdmin(admin.ModelAdmin):
             'classes': ('collapse',),
         }),
     )
+
+@admin.register(Like)
+class LikeAdmin(admin.ModelAdmin):
+    pass    
