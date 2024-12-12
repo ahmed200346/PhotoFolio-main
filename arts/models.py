@@ -11,10 +11,11 @@ class Art(models.Model):
     tags = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     price = models.FloatField(default=0)
-    is_public = models.BooleanField(default=False)  
+    is_public = models.BooleanField(default=False)
     likes = models.ManyToManyField(
         User, related_name='likes'
     )
+
     file = models.FileField(
         upload_to='arts/img/',
         validators=[
@@ -36,11 +37,18 @@ class Art(models.Model):
 
     def __str__(self):
         return f"{self.title} ({'Public' if self.is_public else 'Private'})"
-
+    
 
 class Like(models.Model):
     art = models.ForeignKey(
-        Art, on_delete=models.CASCADE, related_name='arts_likes'  # Spécifiez un related_name unique ici
+        Art, on_delete=models.CASCADE, related_name='arts_likes'  
     )
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
+class Comment(models.Model):
+    art = models.ForeignKey(Art, on_delete=models.CASCADE, related_name='comments')
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    text = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    def __str__(self):
+        return f"Comment by {self.user.username} on {self.art.title}"

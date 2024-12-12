@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'administrateur',  # Correction ici
     'payment',
     'paypal.standard.ipn',
+    'sentiment_api',
 ]
 
 
@@ -62,7 +63,7 @@ ROOT_URLCONF = 'art_gallery.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [ ],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

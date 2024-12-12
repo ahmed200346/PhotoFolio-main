@@ -5,7 +5,15 @@ from django.core.exceptions import ValidationError
 from django import forms
 from django.core.exceptions import ValidationError
 from .models import Art
+from .models import Comment
 
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = ['text']
+        widgets = {
+            'text': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Écrivez votre commentaire...'}),
+        }
 class AddArt(forms.ModelForm):
     class Meta:
         model = Art

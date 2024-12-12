@@ -161,7 +161,10 @@
             {% endif %}
   
             <div class="gallery-links d-flex align-items-center justify-content-center">
-        
+                <!-- Nouveau lien pour la liste des commentaires -->
+  <a href="{% url 'list_comments' art.id %}" class="details-link">
+    <i class="bi bi-chat-left-text"></i> <!-- Icône de liste de commentaires -->
+  </a>
               <a href="{{ art.file.url }}" title="{{ art.title }}" class="glightbox preview-link">
                 <i class="bi bi-arrows-angle-expand"></i>
               </a>

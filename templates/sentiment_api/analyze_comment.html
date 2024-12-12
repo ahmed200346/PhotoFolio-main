@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Analyse de commentaire</title>
+</head>
+<body>
+    <h1>Analyse de sentiment - Commentaire</h1>
+    <form method="post">
+        {% csrf_token %}
+        <textarea name="comment" rows="4" cols="50" placeholder="Saisissez votre commentaire ici..."></textarea>
+        <br><br>
+        <button type="submit">Analyser</button>
+    </form>
+</body>
+</html>

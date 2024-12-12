@@ -163,7 +163,9 @@
                               <h1>{{ art.total_likes }}</h1>
                           </button>
                       </form>
-                        
+                      <a href="{% url 'add_comment' art.id %}" class="details-link">
+                        <i class="bi bi-chat-dots"></i>
+                    </a>
                         <h1>{{ art.title }}</h1>
                     </div>
                 </div>

@@ -25,5 +25,6 @@ urlpatterns = [
     path('arts/', include('arts.urls')),
     path('', include('payment.urls')),
     path('', include('paypal.standard.ipn.urls')),
+    path('api/sentiment/', include('sentiment_api.urls')),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) 
 

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Analyse de fichier</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h1>Analyse de sentiment - Fichier</h1>
+    <form method="post" enctype="multipart/form-data" id="uploadForm">
+        {% csrf_token %}
+        <input type="file" name="file" accept=".csv, .json">
+        <br><br>
+        <button type="submit">Analyser</button>
+    </form>
+
+    <canvas id="sentimentChart" width="400" height="400" style="display:none;"></canvas>
+
+    <script>
+        const uploadForm = document.getElementById('uploadForm');
+        uploadForm.onsubmit = async (event) => {
+            event.preventDefault();
+
+            const formData = new FormData(uploadForm);
+            const response = await fetch("", {
+                method: "POST",
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if (data.error) {
+                alert(data.error);
+                return;
+            }
+
+            const ctx = document.getElementById('sentimentChart').getContext('2d');
+            const chartData = {
+                labels: Object.keys(data.counts),
+                datasets: [{
+                    label: 'Sentiments',
+                    data: Object.values(data.counts),
+                    backgroundColor: ['#36A2EB', '#FF6384', '#FFCE56'],
+                }]
+            };
+
+            document.getElementById('sentimentChart').style.display = 'block';
+
+            new Chart(ctx, {
+                type: 'pie',
+                data: chartData
+            });
+        };
+    </script>
+</body>
+</html>

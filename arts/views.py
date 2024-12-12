@@ -1,19 +1,94 @@
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DeleteView, DetailView, UpdateView, CreateView
-from .models import Art,Like
+from .models import *
 from .forms import UpdateArt, AddArt
 from paypal.standard.forms import PayPalPaymentsForm
 from django.conf import settings
 import uuid
-from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.views import View
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-
+from django.http import HttpResponse
+from .forms import CommentForm
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Count
+import csv
+class ExportCommentsCSVView(View):
+    def get(self, request, art_id):
+        try:
+            # Récupérer l'œuvre d'art correspondante
+            art = get_object_or_404(Art, id=art_id)
+
+            # Récupérer les commentaires associés à cette œuvre d'art
+            comments = art.comments.all()
+
+            response = HttpResponse(content_type='text/csv')
+            response['Content-Disposition'] = f'attachment; filename="{art.title}_comments.csv"'
+            writer = csv.writer(response)
+            writer.writerow(['Art Title', 'comment', 'Username', 'Created At'])
+            for comment in comments:
+                writer.writerow([art.title, comment.text, comment.user.username, comment.created_at])
+
+            return response
+
+        except Exception as e:
+            # Log the error for debugging
+            print(f"Error: {e}")
+            return HttpResponse("An error occurred while generating the CSV.", status=500)
+class AddCommentView(LoginRequiredMixin, CreateView):
+    model = Comment
+    form_class = CommentForm
+    template_name = "comment.html"
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        art_id = self.kwargs.get('art_id')
+        context['art'] = get_object_or_404(Art, id=art_id)
+        return context
+    def form_valid(self, form):
+        art_id = self.kwargs.get('art_id')
+        art = get_object_or_404(Art, id=art_id)
+        form.instance.user = self.request.user
+        form.instance.art = art
+        return super().form_valid(form)
+    def get_success_url(self):
+        art_id = self.kwargs.get('art_id')
+        return reverse_lazy('add_comment', kwargs={'art_id': art_id})
+
+class DeleteComment(LoginRequiredMixin, DeleteView):
+    model = Comment
+    template_name = 'comment_delete.html'
+
+    # Ici, `success_url` sera calculé dynamiquement après la suppression
+    def get_success_url(self):
+        art_id = self.kwargs.get('art_id')  # Récupération de l'ID de l'article
+        return reverse_lazy('add_comment', kwargs={'art_id': art_id})  # Redirection vers la vue addcomment avec l'ID de l'article
+
+    def get_object(self, queryset=None):
+        comment_id = self.kwargs.get('comment_id')
+        return Comment.objects.get(pk=comment_id)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        art_id = self.kwargs.get('art_id')
+        context['art'] = get_object_or_404(Art, id=art_id)
+        return context
+class CommentView(ListView):
+    model = Comment
+    template_name = "list_comments.html"
+    context_object_name = "comments"
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        art_id = self.kwargs.get('art_id')
+        context['art'] = get_object_or_404(Art, id=art_id)
+        return context
+
+    def get_queryset(self):
+        art_id = self.kwargs.get('art_id')
+        art = get_object_or_404(Art, id=art_id)
+        return art.comments.all()
+    
 
 class ArtistView(ListView):
     model = Art
@@ -37,11 +112,7 @@ class ArtistView(ListView):
                 queryset = queryset.filter(is_public=True)
             elif is_public.lower() == 'false':  
                 queryset = queryset.filter(is_public=False)
-
-        # Annotate the queryset with like counts
         queryset = queryset.annotate(like_count=Count('arts_likes'))
-
-        # Sort by like_count if requested
         if sort_likes and sort_likes.lower() == 'true':
             queryset = queryset.order_by('-like_count', '-created_at')
         else:
@@ -189,3 +260,8 @@ class LikeArtView(View):
 
         # Redirige vers la galerie
         return redirect('gallery')
+    
+
+    
+
+

@@ -1,0 +1,157 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>Commentaires</title>
+
+  <!-- Favicons -->
+  <link href="{% static 'assets/img/favicon.png' %}" rel="icon">
+  <link href="{% static 'assets/img/apple-touch-icon.png' %}" rel="apple-touch-icon">
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com" rel="preconnect">
+  <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="{% static 'assets/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/vendor/aos/aos.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/vendor/glightbox/css/glightbox.min.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/vendor/swiper/swiper-bundle.min.css' %}" rel="stylesheet">
+
+  <!-- Main CSS File -->
+  <link href="{% static 'assets/css/main.css' %}" rel="stylesheet">
+  <style>
+    .comments-container {
+      max-height: 300px;
+      overflow: hidden;
+      position: relative;
+    }
+    .comments {
+      transition: transform 0.3s ease-in-out;
+    }
+    .btn-arrow {
+      width: 30px; /* Taille réduite */
+      height: 30px; /* Taille réduite */
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #6c757d;
+      color: white;
+      z-index: 10;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      cursor: pointer;
+      font-size: 12px; /* Réduction de la taille de l'icône */
+    }
+    .btn-arrow.up {
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    .btn-arrow.down {
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    .btn-arrow:hover {
+      background-color: #5a6268;
+    }
+  </style>
+</head>
+<body>
+    <header id="header" class="header d-flex align-items-center sticky-top">
+      <div class="container-fluid position-relative d-flex align-items-center justify-content-between">
+        <a href="{% url 'gallery' %}" class="logo d-flex align-items-center me-auto me-xl-0">
+          <i class="bi bi-chat-left-text"></i>
+          <h1 class="sitename">Commentaires</h1>
+        </a>
+      </div>
+    </header>
+    <main class="main"> 
+        <div class="container mt-5">
+          <section id="contact" class="contact section">
+            <a href="{% url 'list_arts'%}" class="btn btn-primary">
+                Retourner
+              </a>
+            <div class="container aos-init aos-animate" data-aos="fade-up" data-aos-delay="100">
+    
+              <!-- Section des commentaires -->
+              <div class="comments-section">
+                <h2 class="text-center">Commentaires pour "{{ art.title }}"</h2>
+                <div class="text-end mb-3">
+
+                    <a href="{% url 'export_comments_csv' art.id %}" class="btn btn-primary">
+                      Exporter les commentaires en CSV
+                    </a>
+                  </div>                  
+                <div class="comments-container position-relative">
+                  <!-- Bouton de navigation vers le haut -->
+                  <button id="scroll-up" class="btn btn-secondary btn-arrow up position-absolute" disabled>
+                    <i class="bi bi-chevron-up"></i>
+                  </button>
+                  <div class="comments">
+                    {% for comment in comments %}
+                      <div class="comment p-3 my-3 border rounded">
+                        <strong>{{ comment.user.username }}</strong> :
+                        <p>{{ comment.text }}</p>
+                        <small class="text-muted">Posté le {{ comment.created_at }}</small>
+                      </div>
+                    {% empty %}
+                      <p class="text-center">No Commentaire pour le moment pour votre art !</p>
+                    {% endfor %}
+                  </div>
+                  <!-- Bouton de navigation vers le bas -->
+                  <button id="scroll-down" class="btn btn-secondary btn-arrow down position-absolute" disabled>
+                    <i class="bi bi-chevron-down"></i>
+                  </button>
+                </div>
+              </div>         
+                  <footer id="footer" class="footer">
+                    <div class="container">
+                      <div class="copyright text-center">
+                        <p>© <span>Copyright</span> <strong class="px-1 sitename">PhotoFolio</strong> <span>All Rights Reserved</span></p>
+                      </div>
+                    </div>
+                  </footer>             
+      <!-- Vendor JS Files -->
+      <script>
+        const commentsContainer = document.querySelector('.comments-container');
+        const comments = document.querySelector('.comments');
+        const scrollUpButton = document.getElementById('scroll-up');
+        const scrollDownButton = document.getElementById('scroll-down');
+        
+        let scrollPosition = 0;
+        const commentHeight = 120; // Approximate height of a comment
+        
+        // Activer ou désactiver les boutons
+        function updateButtons() {
+          scrollUpButton.disabled = scrollPosition === 0;
+          scrollDownButton.disabled = scrollPosition >= comments.scrollHeight - commentsContainer.clientHeight;
+        }
+        
+        document.getElementById('scroll-up').addEventListener('click', () => {
+          scrollPosition = Math.max(scrollPosition - commentHeight, 0);
+          comments.style.transform = `translateY(-${scrollPosition}px)`;
+          updateButtons();
+        });
+        
+        document.getElementById('scroll-down').addEventListener('click', () => {
+          scrollPosition = Math.min(scrollPosition + commentHeight, comments.scrollHeight - commentsContainer.clientHeight);
+          comments.style.transform = `translateY(-${scrollPosition}px)`;
+          updateButtons();
+        });
+        
+        // Vérifiez la hauteur initiale pour activer/désactiver les boutons
+        if (comments.scrollHeight > commentsContainer.clientHeight) {
+          scrollDownButton.disabled = false;
+        };
+        
+      </script>
+    </body>
+    </html>
+    
